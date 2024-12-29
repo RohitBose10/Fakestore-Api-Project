@@ -9,6 +9,7 @@ import {
   Select,
   MenuItem,
   Pagination,
+  Box,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { fetchProducts } from "../../redux/slice/ProductSlice";
@@ -54,15 +55,28 @@ const HomePage = () => {
   if (status === "failed") return <p>Error: {error}</p>;
 
   return (
-    <>
+    <Box sx={{ padding: { xs: 2, md: 6 } }}>
       {/* Header with Sort Options */}
-      <div className="p-6 flex justify-between items-center">
-        <h1
-          className="text-3xl font-bold text-center flex-grow pt-4 pb-4"
-          style={{ color: "#008080" }}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: { xs: "center", md: "space-between" },
+          alignItems: "center",
+          flexDirection: { xs: "row", md: "row" },
+          gap: 2,
+          textAlign: { xs: "center", md: "left" }, // Center align for small screens
+        }}
+      >
+        <Typography
+          variant="h4"
+          fontWeight="bold"
+          sx={{
+            fontSize: { xs: "1rem", sm: "1.5rem", md: "2rem" }, // Adjust font size for screen size
+            color: "#008080",
+          }}
         >
-          Explore Our Exclusive Collection of Products
-        </h1>
+          Exclusive Collection
+        </Typography>
 
         <Select
           value={sortCriteria}
@@ -70,6 +84,7 @@ const HomePage = () => {
           size="small"
           variant="outlined"
           sx={{
+            minWidth: { xs: 120, sm: 150 }, // Adjust width for small screens
             border: "1px solid #008080",
             borderRadius: "4px",
             color: "#008080",
@@ -80,109 +95,131 @@ const HomePage = () => {
           <MenuItem value="price">Sort by Price</MenuItem>
           <MenuItem value="rating">Sort by Rating</MenuItem>
         </Select>
-      </div>
+      </Box>
 
       {/* Product Cards */}
-      <div className="px-10 lg:px-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {paginatedProducts.map((product) => (
-            <Card
-              key={product.id}
-              className="flex flex-col rounded-lg shadow hover:shadow-lg hover:scale-105 transition-all duration-300 bg-white border border-gray-200"
+      <Box
+        sx={{
+          marginTop: 4,
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "repeat(1, 1fr)",
+            sm: "repeat(2, 1fr)",
+            md: "repeat(3, 1fr)",
+          },
+          gap: 4,
+        }}
+      >
+        {paginatedProducts.map((product) => (
+          <Card
+            key={product.id}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              border: "1px solid #e0e0e0",
+              borderRadius: 2,
+              boxShadow: 2,
+              transition: "transform 0.3s ease, box-shadow 0.3s ease",
+              "&:hover": {
+                transform: "scale(1.05)",
+                boxShadow: 4,
+              },
+            }}
+          >
+            {/* Product Image */}
+            <Box
               sx={{
-                maxWidth: 400,
-                minHeight: 450,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: { xs: 200, sm: 250 },
+                backgroundColor: "#f5f5f5",
+                cursor: "pointer",
+              }}
+              onClick={() => navigate(`/product/${product.id}`)}
+            >
+              <CardMedia
+                component="img"
+                image={product.image}
+                alt={product.title}
+                sx={{
+                  maxHeight: "100%",
+                  maxWidth: "100%",
+                  objectFit: "contain",
+                }}
+              />
+            </Box>
+
+            {/* Product Details */}
+            <CardContent
+              sx={{
+                textAlign: "center",
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "space-between",
+                gap: 1,
               }}
             >
-              {/* Product Image */}
-              <div
-                className="flex justify-center items-center w-full h-64 bg-gray-100 cursor-pointer"
-                onClick={() => navigate(`/product/${product.id}`)}
-              >
-                <CardMedia
-                  component="img"
-                  image={product.image}
-                  alt={product.title}
-                  sx={{
-                    maxHeight: "100%",
-                    maxWidth: "100%",
-                    objectFit: "contain",
-                  }}
-                />
-              </div>
-
-              {/* Product Details */}
-              <CardContent
-                className="flex flex-col items-center text-center p-3"
+              <Typography
+                variant="subtitle2"
+                component="div"
+                title={product.title}
                 sx={{
-                  height: "auto",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-evenly",
-                  flexGrow: 1,
+                  overflow: "hidden",
+                  display: "-webkit-box",
+                  WebkitBoxOrient: "vertical",
+                  WebkitLineClamp: 2,
+                  textOverflow: "ellipsis",
+                  fontWeight: "medium",
+                  color: "#333",
                 }}
               >
-                <Typography
-                  variant="subtitle2"
-                  component="div"
-                  className="text-sm font-medium text-gray-800"
-                  title={product.title}
-                  sx={{
-                    overflowWrap: "break-word", // Breaks long words into multiple lines
-                    textAlign: "center", // Keeps the text centered
-                    maxHeight: "3rem", // Restricts height to two lines
-                    overflow: "hidden", // Hides excess text if it overflows two lines
-                    display: "-webkit-box",
-                    WebkitBoxOrient: "vertical",
-                    WebkitLineClamp: 2, // Limits to 2 lines
-                  }}
-                >
-                  {product.title}
+                {product.title}
+              </Typography>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 0.5,
+                }}
+              >
+                <Rating
+                  value={product.rating.rate}
+                  readOnly
+                  precision={0.1}
+                  size="small"
+                />
+                <Typography variant="caption" sx={{ color: "gray" }}>
+                  ({product.rating.count})
                 </Typography>
+              </Box>
 
-                <div className="mt-2 flex items-center justify-center">
-                  <Rating
-                    value={product.rating.rate}
-                    readOnly
-                    precision={0.1}
-                    size="small"
-                  />
-                  <Typography
-                    variant="caption"
-                    sx={{ marginLeft: 1, color: "gray" }}
-                  >
-                    ({product.rating.count})
-                  </Typography>
-                </div>
+              <Typography
+                variant="body2"
+                sx={{ color: "#555", fontWeight: "bold" }}
+              >
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(product.price)}
+              </Typography>
+            </CardContent>
+          </Card>
+        ))}
+      </Box>
 
-                <Typography
-                  variant="body2"
-                  sx={{ color: "#555", marginTop: 1 }}
-                >
-                  {new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                  }).format(product.price)}
-                </Typography>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Pagination */}
-        <div className="flex justify-center mt-8">
-          <Pagination
-            count={Math.ceil(products.length / itemsPerPage)}
-            page={currentPage}
-            onChange={handlePageChange}
-            color="primary"
-          />
-        </div>
-      </div>
-    </>
+      {/* Pagination */}
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+        <Pagination
+          count={Math.ceil(products.length / itemsPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Box>
+    </Box>
   );
 };
 

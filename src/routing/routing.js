@@ -18,7 +18,9 @@ const Routing = () => {
           path="/"
           element={
             <Grid item xs={12} sm={9} md={9} m={4}>
-              <CategoriesPage />
+              <Grid item sx={{ ml: { xs: 2, sm: 2, md: 6, lg: 6, xl: 6 } }}>
+                <CategoriesPage />
+              </Grid>
               <HomePage />
             </Grid>
           }
